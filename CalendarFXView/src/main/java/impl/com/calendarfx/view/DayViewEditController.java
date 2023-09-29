@@ -202,7 +202,7 @@ public class DayViewEditController {
             Entry<?> entry = createEntryAt(evt);
             evt.consume();
 
-            if (view.isShowDetailsUponEntryCreation()) {
+            if (view.isShowDetailsUponEntryCreation() && entry != null) {
                 view.fireEvent(new RequestEvent(view, view, entry));
             }
         }
@@ -327,6 +327,7 @@ public class DayViewEditController {
 
         ZonedDateTime time = ZonedDateTime.ofInstant(instantAt, view.getZoneId());
         Entry<?> newEntry = view.createEntryAt(time, calendar.orElse(null), false);
+        if (newEntry == null) return null;
 
         Duration duration = newEntry.getMinimumDuration();
 
@@ -350,7 +351,7 @@ public class DayViewEditController {
     }
 
     private void mouseDragged(MouseEvent evt) {
-        if (evt.isStillSincePress()) {
+        if (evt.isStillSincePress() || dragMode == null) {
             return;
         }
 
@@ -389,6 +390,8 @@ public class DayViewEditController {
 
             // Important, use the initial mouse event when the user pressed the button
             entry = createEntryAt(mousePressedEvent);
+
+            if (entry == null) return;
 
             DayView dayView = null;
 
